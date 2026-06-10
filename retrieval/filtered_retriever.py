@@ -1,27 +1,19 @@
-from retrieval.company_detector import detect_company
+class FilteredRetriever:
 
+    def __init__(self, vector_store):
+        self.vector_store = vector_store
 
-def retrieve_documents(query, vector_store, k=5):
+    def retrieve(self, query: str, company: str | None = None, k: int = 5):
 
-    company = detect_company(query)
+        if company:
+            print(f"\nUsing Company Filter: {company}")
 
-    if company:
+            return self.vector_store.similarity_search(
+                query=query,
+                k=k,
+                filter={"company": company}
+            )
 
-        print(f"\nDetected Company: {company}")
+        print("\nNo company filter applied")
 
-        docs = vector_store.similarity_search(
-            query=query,
-            k=k,
-            filter={"company": company}
-        )
-
-    else:
-
-        print("\nNo company detected")
-
-        docs = vector_store.similarity_search(
-            query=query,
-            k=k
-        )
-
-    return docs
+        return self.vector_store.similarity_search(query=query, k=k)

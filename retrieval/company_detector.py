@@ -1,17 +1,42 @@
-COMPANIES = [
-    "Air India",
-    "Emirates",
-    "Spicejet",
-    "Gofirst"
-]
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 
-def detect_company(query: str) -> str | None:
+class CompanyDetector:
 
-    query_lower = query.lower()
+    COMPANIES = (
+        "Air India",
+        "Emirates",
+        "Spicejet",
+        "Gofirst"
+    )
 
-    for company in COMPANIES:
-        if company.lower() in query_lower:
+    MIN_CONFIDENCE = 55
+
+    def detect(
+        self,
+        query: str
+    ) -> str | None:
+       
+        # Fuzzy match
+        match = process.extractOne(
+            query,
+            self.COMPANIES,
+            scorer=fuzz.WRatio
+        )
+
+        if not match:
+            return None
+
+        company, score, _ = match
+
+        if score >= self.MIN_CONFIDENCE:
+
+            print(
+                f"\nFuzzy Company Match: "
+                f"{company} ({score})"
+            )
+
             return company
 
-    return None
+        return None
