@@ -1,14 +1,18 @@
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 from database.sqlite_manager import SQLiteManager
 from models.chat_message import ChatMessage
-
+from models.conversation_context import (
+    ConversationContext
+)
 
 class MemoryService:
 
     def __init__(self):
         self.db = SQLiteManager()
-
-        self._active_companies: dict[str, str] = {}
+        self._contexts: dict[
+            str,
+            ConversationContext
+        ] = {}
 
     # ---------------- DB CHAT MEMORY ----------------
 
@@ -56,14 +60,22 @@ class MemoryService:
                 history.append(AIMessage(content=m.content))
 
         return history
+    
+    def get_context(
+        self,
+        session_id: str
+    ) -> ConversationContext:
 
-    # ---------------- COMPANY STATE ----------------
+        return self._contexts.get(
+            session_id,
+            ConversationContext()
+        )
 
-    def set_active_company(self, session_id: str, company: str):
-        self._active_companies[session_id] = company
 
-    def get_active_company(self, session_id: str):
-        return self._active_companies.get(session_id)
+    def save_context(
+        self,
+        session_id: str,
+        context: ConversationContext
+    ):
 
-    def clear_active_company(self, session_id: str):
-        self._active_companies.pop(session_id, None)
+        self._contexts[session_id] = context

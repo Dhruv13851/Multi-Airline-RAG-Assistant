@@ -1,5 +1,4 @@
 from rapidfuzz import fuzz
-from rapidfuzz import process
 
 
 class CompanyDetector:
@@ -11,32 +10,31 @@ class CompanyDetector:
         "Gofirst"
     )
 
-    MIN_CONFIDENCE = 55
+    MIN_CONFIDENCE = 70
 
-    def detect(
+    def detect_all(
         self,
         query: str
-    ) -> str | None:
-       
-        # Fuzzy match
-        match = process.extractOne(
-            query,
-            self.COMPANIES,
-            scorer=fuzz.WRatio
-        )
+    ) -> list[str]:
 
-        if not match:
-            return None
+        found = []
 
-        company, score, _ = match
+        query_lower = query.lower()
 
-        if score >= self.MIN_CONFIDENCE:
+        for company in self.COMPANIES:
 
-            print(
-                f"\nFuzzy Company Match: "
-                f"{company} ({score})"
+            score = fuzz.partial_ratio(
+                company.lower(),
+                query_lower
             )
 
-            return company
+            if score >= self.MIN_CONFIDENCE:
 
-        return None
+                found.append(company)
+
+                print(
+                    f"\nFuzzy Company Match: "
+                    f"{company} ({score})"
+                )
+
+        return found

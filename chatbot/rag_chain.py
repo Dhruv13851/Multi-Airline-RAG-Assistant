@@ -29,7 +29,10 @@ def build_rag_chain(vector_store, llm):
 
         docs = retriever.retrieve(
             query=inputs["rewritten_query"],
-            company=inputs.get("company"),
+            companies=inputs.get(
+                "companies",
+                []
+            ),
             k=5
         )
 
