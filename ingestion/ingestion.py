@@ -28,9 +28,7 @@ def log_chunks(chunks):
     return chunks
 
 
-# =========================
-# Pipeline Steps
-# =========================
+ 
 
 load_step = RunnableLambda(load_documents).with_config(
     {"run_name": "Load Documents"}
@@ -52,11 +50,7 @@ vector_store_step = RunnableLambda(build_vector_store).with_config(
     {"run_name": "Build Vector Store"}
 )
 
-
-# =========================
-# LangChain Pipeline
-# =========================
-
+ 
 ingestion_pipeline = (
     load_step
     | log_documents_step
